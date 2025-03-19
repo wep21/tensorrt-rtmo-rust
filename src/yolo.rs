@@ -1,10 +1,12 @@
 #[cxx::bridge(namespace = "yolo")]
 pub mod ffi {
+    #[derive(Debug)]
     struct Point {
         x: f32,
         y: f32,
     }
 
+    #[derive(Debug)]
     struct Bbox {
         tl: Point,
         br: Point,

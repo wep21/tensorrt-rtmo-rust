@@ -52,6 +52,7 @@ rust_binary(
         ":yolo",
         ":yolo_bridge",
         "@cxx.rs//:cxx",
+	"@crates//:image",
     ],
 )
 

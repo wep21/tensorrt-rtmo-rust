@@ -1,2 +1,14 @@
 bazel-*
 MODULE.bazel.lock
+
+
+# Added by cargo
+
+/target
+
+
+# Added by cargo
+#
+# already existing elements were commented out
+
+#/target

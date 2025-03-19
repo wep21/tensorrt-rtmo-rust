@@ -26,12 +26,37 @@ fn main() {
     for _ in 0..10 {
         let start = Instant::now();
         let status = detector.as_mut().infer(image.clone(), boxes.pin_mut());
+        println!("{}", status);
+        println!("{:?}", boxes);
         let duration = start.elapsed();
         total_duration += duration;
 
         println!("Inference status: {}", status);
         println!("Inference time: {:?}", duration);
     }
+
+    // Visualize bounding boxes on the image
+    let mut out_img = img.to_rgb8();
+    for bbox in boxes.iter() {
+        let x_min = bbox.tl.x as u32;
+        let y_min = bbox.tl.y as u32;
+        let x_max = bbox.br.x as u32;
+        let y_max = bbox.br.y as u32;
+
+        for x in x_min..=x_max {
+            out_img.put_pixel(x, y_min, image::Rgb([255, 0, 0]));
+            out_img.put_pixel(x, y_max, image::Rgb([255, 0, 0]));
+        }
+        for y in y_min..=y_max {
+            out_img.put_pixel(x_min, y, image::Rgb([255, 0, 0]));
+            out_img.put_pixel(x_max, y, image::Rgb([255, 0, 0]));
+        }
+    }
+
+    // Save the image with bounding boxes
+    out_img.save("output.png").expect("Failed to save image");
+
+
 
     // Calculate and print average inference time
     let average_duration = total_duration / 10;
