@@ -1,7 +1,7 @@
-mod yolo;
+mod rtmo;
 use cxx::let_cxx_string;
 use cxx::CxxVector;
-use crate::yolo::ffi::Bbox;
+use crate::rtmo::ffi::PoseResult;
 use std::time::Instant;
 use image::GenericImageView;
 
@@ -14,20 +14,18 @@ fn main() {
     let (width, height) = img.dimensions();
     let image = img.to_rgb8().into_raw();
 
-    let mut binding = yolo::ffi::make_yolo(&plan, width as i32, height as i32);
+    let mut binding = rtmo::ffi::make_rtmo(&plan, width as i32, height as i32);
     let mut detector = binding.pin_mut();
-    let mut boxes = CxxVector::<Bbox>::new();
+    let mut pose_results = CxxVector::<PoseResult>::new();
 
     // Warm up inference
-    let _ = detector.as_mut().infer(image.clone(), boxes.pin_mut());
+    let _ = detector.as_mut().infer(image.clone(), pose_results.pin_mut());
 
     // Perform inference ten times and measure total time
     let mut total_duration = std::time::Duration::new(0, 0);
     for _ in 0..10 {
         let start = Instant::now();
-        let status = detector.as_mut().infer(image.clone(), boxes.pin_mut());
-        println!("{}", status);
-        println!("{:?}", boxes);
+        let status = detector.as_mut().infer(image.clone(), pose_results.pin_mut());
         let duration = start.elapsed();
         total_duration += duration;
 
@@ -35,13 +33,13 @@ fn main() {
         println!("Inference time: {:?}", duration);
     }
 
-    // Visualize bounding boxes on the image
+    // Visualize pose on the image
     let mut out_img = img.to_rgb8();
-    for bbox in boxes.iter() {
-        let x_min = bbox.tl.x as u32;
-        let y_min = bbox.tl.y as u32;
-        let x_max = bbox.br.x as u32;
-        let y_max = bbox.br.y as u32;
+    for pose_result in pose_results.iter() {
+        let x_min = pose_result.bbox.tl.x as u32;
+        let y_min = pose_result.bbox.tl.y as u32;
+        let x_max = pose_result.bbox.br.x as u32;
+        let y_max = pose_result.bbox.br.y as u32;
 
         for x in x_min..=x_max {
             out_img.put_pixel(x, y_min, image::Rgb([255, 0, 0]));
@@ -51,9 +49,26 @@ fn main() {
             out_img.put_pixel(x_min, y, image::Rgb([255, 0, 0]));
             out_img.put_pixel(x_max, y, image::Rgb([255, 0, 0]));
         }
+
+        for keypoint in pose_result.keypoints.iter() {
+            let x = keypoint.x as u32;
+            let y = keypoint.y as u32;
+            if x >= width || y >= height {
+                continue;
+            }
+            for dx in -1..=1 {
+                for dy in -1..=1 {
+                    let nx = x as i32 + dx;
+                    let ny = y as i32 + dy;
+                    if nx >= 0 && ny >= 0 && (nx as u32) < width && (ny as u32) < height {
+                        out_img.put_pixel(nx as u32, ny as u32, image::Rgb([0, 255, 0]));
+                    }
+                }
+            }
+        }
     }
 
-    // Save the image with bounding boxes
+    // Save the image with pose
     out_img.save("output.png").expect("Failed to save image");
 
 

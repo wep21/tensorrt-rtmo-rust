@@ -15,31 +15,31 @@ cc_library(
 )
 
 cc_library(
-    name = "yolo_header",
-    hdrs = ["src/yolo.hpp"],
+    name = "rtmo_header",
+    hdrs = ["src/rtmo.hpp"],
     includes = ["src"],
 )
 
 cc_library(
-    name = "yolo",
+    name = "rtmo",
     srcs = [
-        "src/yolo.cpp",
+        "src/rtmo.cpp",
     ],
     deps = [
         ":engine",
-        ":yolo_header",
+        ":rtmo_header",
         "@cxx.rs//:core",
         "@cvcuda",
-        ":yolo_bridge/include",
+        ":rtmo_bridge/include",
     ],
 )
 
 rust_cxx_bridge(
-    name = "yolo_bridge",
-    src = "src/yolo.rs",
+    name = "rtmo_bridge",
+    src = "src/rtmo.rs",
     deps = [
         ":engine",
-        ":yolo",
+        ":rtmo",
         "@opencv",
         "@rules_cuda//cuda:runtime",
     ],
@@ -49,8 +49,8 @@ rust_binary(
     name = "main",
     srcs = glob(["src/*.rs"]),
     deps = [
-        ":yolo",
-        ":yolo_bridge",
+        ":rtmo",
+        ":rtmo_bridge",
         "@cxx.rs//:cxx",
 	"@crates//:image",
     ],

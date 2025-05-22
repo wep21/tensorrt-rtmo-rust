@@ -12,11 +12,11 @@
 #include "engine.hpp"
 #include "rust/cxx.h"
 
-namespace yolo {
+namespace rtmo {
 
-struct Bbox;
+struct PoseResult;
 
-class Yolo {
+class Rtmo {
 private:
   int image_width_;
   int image_height_;
@@ -26,11 +26,8 @@ private:
   nvcv::TensorDataStridedCuda::Buffer input_buffer_;
   nvcv::TensorDataStridedCuda::Buffer input_layer_buffer_;
 
-  int* num_detections_;
-  float* boxes_;
-  float* scores_;
-  int* classes_;
-  float* outputs_;
+  float* dets_;
+  float* keypoints_;
 
   nvcv::Tensor input_tensor_;
   nvcv::Tensor rgb_tensor_;
@@ -47,11 +44,11 @@ private:
   cudaEvent_t stop_;
 
 public:
-  Yolo(std::string plan, const int image_width, const int image_height);
-  ~Yolo();
-  bool infer(const rust::Vec<uint8_t> image, std::vector<Bbox>& boxes);
+  Rtmo(std::string plan, const int image_width, const int image_height);
+  ~Rtmo();
+  bool infer(const rust::Vec<uint8_t> image, std::vector<PoseResult>& boxes);
 };
 
-std::unique_ptr<Yolo> make_yolo(const std::string& plan, const int image_width,
+std::unique_ptr<Rtmo> make_rtmo(const std::string& plan, const int image_width,
                                 const int image_height);
-}  // namespace yolo
+}  // namespace rtmo
