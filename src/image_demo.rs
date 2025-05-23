@@ -38,8 +38,8 @@ fn main() {
     for pose_result in pose_results.iter() {
         let x_min = pose_result.bbox.tl.x as u32;
         let y_min = pose_result.bbox.tl.y as u32;
-        let x_max = pose_result.bbox.br.x as u32;
-        let y_max = pose_result.bbox.br.y as u32;
+        let x_max = std::cmp::min(pose_result.bbox.br.x as u32, width - 1);
+        let y_max = std::cmp::min(pose_result.bbox.br.y as u32, height - 1);
 
         for x in x_min..=x_max {
             out_img.put_pixel(x, y_min, image::Rgb([255, 0, 0]));
@@ -53,7 +53,7 @@ fn main() {
         for keypoint in pose_result.keypoints.iter() {
             let x = keypoint.x as u32;
             let y = keypoint.y as u32;
-            if x >= width || y >= height {
+            if x > width || y > height {
                 continue;
             }
             for dx in -1..=1 {

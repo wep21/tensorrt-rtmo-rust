@@ -32,7 +32,11 @@ pub mod ffi {
         include!("rtmo.hpp");
 
         type Rtmo;
-        fn infer(self: Pin<&mut Rtmo>, image: Vec<u8>, boxes: Pin<&mut CxxVector<PoseResult>>) -> bool;
+        fn infer(
+            self: Pin<&mut Rtmo>,
+            image: Vec<u8>,
+            boxes: Pin<&mut CxxVector<PoseResult>>,
+        ) -> bool;
 
         pub fn make_rtmo(plan: &CxxString, image_width: i32, image_height: i32) -> UniquePtr<Rtmo>;
     }

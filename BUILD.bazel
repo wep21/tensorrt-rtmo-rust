@@ -27,10 +27,10 @@ cc_library(
     ],
     deps = [
         ":engine",
-        ":rtmo_header",
-        "@cxx.rs//:core",
-        "@cvcuda",
         ":rtmo_bridge/include",
+        ":rtmo_header",
+        "@cvcuda",
+        "@cxx.rs//:core",
     ],
 )
 
@@ -40,43 +40,36 @@ rust_cxx_bridge(
     deps = [
         ":engine",
         ":rtmo",
-        "@opencv",
         "@rules_cuda//cuda:runtime",
     ],
 )
 
 rust_binary(
-    name = "main",
-    srcs = glob(["src/*.rs"]),
+    name = "image_demo",
+    srcs = [
+        "src/image_demo.rs",
+        "src/rtmo.rs",
+    ],
     deps = [
         ":rtmo",
         ":rtmo_bridge",
+        "@crates//:image",
         "@cxx.rs//:cxx",
-	"@crates//:image",
     ],
 )
 
-cc_binary(
+rust_binary(
     name = "video_demo",
     srcs = [
-        "src/video_demo.cpp",
+        "src/rtmo.rs",
+        "src/video_demo.rs",
     ],
     deps = [
-        "engine",
-        "@byte_track_eigen",
-        "@cvcuda",
-        "@opencv",
-    ],
-)
-
-cc_binary(
-    name = "image_demo",
-    srcs = [
-        "src/image_demo.cpp",
-    ],
-    deps = [
-        "engine",
-        "@cvcuda",
-        "@opencv",
+        ":rtmo",
+        ":rtmo_bridge",
+        "@crates//:image",
+        "@crates//:minifb",
+        "@crates//:video-rs",
+        "@cxx.rs//:cxx",
     ],
 )

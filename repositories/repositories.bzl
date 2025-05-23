@@ -5,13 +5,6 @@ def repositories():
     """Import third party repositories."""
     maybe(
         new_local_repository,
-        name = "opencv",
-        build_file = "//repositories:opencv.BUILD.bazel",
-        path = "/usr",
-    )
-
-    maybe(
-        new_local_repository,
         name = "tensorrt",
         build_file = "//repositories:tensorrt.BUILD.bazel",
         path = "/usr",
