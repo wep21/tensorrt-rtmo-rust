@@ -1,4 +1,4 @@
-module(name = "tensorrt_yolo_rust")
+module(name = "tensorrt_rtmo_rust")
 
 bazel_dep(name = "cxx.rs", version = "1.0.149")
 bazel_dep(name = "platforms", version = "0.0.11")
@@ -13,7 +13,7 @@ cuda.local_toolchain(
 )
 use_repo(cuda, "local_cuda")
 
-non_module_deps = use_extension("@tensorrt_yolo_rust//:extensions.bzl", "non_module_deps")
+non_module_deps = use_extension("@tensorrt_rtmo_rust//:extensions.bzl", "non_module_deps")
 use_repo(
     non_module_deps,
     "cvcuda",

@@ -90,6 +90,7 @@ bool Rtmo::infer(const rust::Vec<uint8_t> image, std::vector<PoseResult>& pose_r
   cudaEventElapsedTime(&operatorms, start_, stop_);
   /* std::cout << "Time for Infer : " << operatorms << " ms" << std::endl; */
   cudaStreamSynchronize(stream_);
+  pose_results.clear();
   pose_results.resize(2000);
   for (size_t i = 0; i < 2000; ++i) {
     const auto score = dets_[i * 5 + 4];
