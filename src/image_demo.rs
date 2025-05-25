@@ -1,9 +1,9 @@
 mod rtmo;
+use crate::rtmo::ffi::PoseResult;
 use cxx::let_cxx_string;
 use cxx::CxxVector;
-use crate::rtmo::ffi::PoseResult;
-use std::time::Instant;
 use image::GenericImageView;
+use std::time::Instant;
 
 fn main() {
     let args = std::env::args().collect::<Vec<String>>();
@@ -19,13 +19,17 @@ fn main() {
     let mut pose_results = CxxVector::<PoseResult>::new();
 
     // Warm up inference
-    let _ = detector.as_mut().infer(image.clone(), pose_results.pin_mut());
+    let _ = detector
+        .as_mut()
+        .infer(image.clone(), pose_results.pin_mut());
 
     // Perform inference ten times and measure total time
     let mut total_duration = std::time::Duration::new(0, 0);
     for _ in 0..10 {
         let start = Instant::now();
-        let status = detector.as_mut().infer(image.clone(), pose_results.pin_mut());
+        let status = detector
+            .as_mut()
+            .infer(image.clone(), pose_results.pin_mut());
         let duration = start.elapsed();
         total_duration += duration;
 
@@ -70,8 +74,6 @@ fn main() {
 
     // Save the image with pose
     out_img.save("output.png").expect("Failed to save image");
-
-
 
     // Calculate and print average inference time
     let average_duration = total_duration / 10;
