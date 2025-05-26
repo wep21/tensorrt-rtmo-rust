@@ -1,0 +1,13 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+rust_library(
+    name = "tracker",
+    srcs = glob([
+        "src/*.rs",
+    ]),
+    deps = [
+        "@crates//:nalgebra",
+        "@crates//:num",
+        "@crates//:thiserror",
+    ],
+)
