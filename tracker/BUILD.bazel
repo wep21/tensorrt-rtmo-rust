@@ -1,4 +1,4 @@
-load("@rules_rust//rust:defs.bzl", "rust_library")
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
 
 rust_library(
     name = "tracker",
@@ -8,6 +8,22 @@ rust_library(
     deps = [
         "@crates//:nalgebra",
         "@crates//:num",
+        "@crates//:thiserror",
+    ],
+)
+
+rust_test(
+    name = "tracker_test",
+    size = "small",
+    srcs = glob([
+        "src/*.rs",
+    ]),
+    deps = [
+        "@crates//:nalgebra",
+        "@crates//:nearly_eq",
+        "@crates//:num",
+        "@crates//:quickcheck",
+        "@crates//:rand",
         "@crates//:thiserror",
     ],
 )
