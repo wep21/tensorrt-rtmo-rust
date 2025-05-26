@@ -1,9 +1,8 @@
-mod rtmo;
-use crate::rtmo::ffi::PoseResult;
 use cxx::let_cxx_string;
 use cxx::CxxVector;
 use image::{ImageBuffer, Rgb};
 use minifb::{Key, Window, WindowOptions};
+use rtmo::rtmo::ffi::{make_rtmo, PoseResult};
 use video_rs::decode::Decoder;
 use video_rs::location::Location;
 
@@ -18,7 +17,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut decoder = Decoder::new(&source).expect("failed to create decoder");
     let (width, height) = decoder.size();
 
-    let mut binding = rtmo::ffi::make_rtmo(
+    let mut binding = make_rtmo(
         &plan,
         (width as u32).try_into().unwrap(),
         (height as u32).try_into().unwrap(),

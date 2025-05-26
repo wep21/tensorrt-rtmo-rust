@@ -1,0 +1,27 @@
+load("@rules_rust//rust:defs.bzl", "rust_binary")
+
+rust_binary(
+    name = "image_demo",
+    srcs = [
+        "src/image_demo.rs",
+    ],
+    deps = [
+        "//detector:rtmo",
+        "@crates//:image",
+        "@cxx.rs//:cxx",
+    ],
+)
+
+rust_binary(
+    name = "video_demo",
+    srcs = [
+        "src/video_demo.rs",
+    ],
+    deps = [
+        "//detector:rtmo",
+        "@crates//:image",
+        "@crates//:minifb",
+        "@crates//:video-rs",
+        "@cxx.rs//:cxx",
+    ],
+)

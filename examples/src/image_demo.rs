@@ -1,8 +1,7 @@
-mod rtmo;
-use crate::rtmo::ffi::PoseResult;
 use cxx::let_cxx_string;
 use cxx::CxxVector;
 use image::GenericImageView;
+use rtmo::rtmo::ffi::PoseResult;
 use std::time::Instant;
 
 fn main() {
@@ -14,7 +13,7 @@ fn main() {
     let (width, height) = img.dimensions();
     let image = img.to_rgb8().into_raw();
 
-    let mut binding = rtmo::ffi::make_rtmo(&plan, width as i32, height as i32);
+    let mut binding = rtmo::rtmo::ffi::make_rtmo(&plan, width as i32, height as i32);
     let mut detector = binding.pin_mut();
     let mut pose_results = CxxVector::<PoseResult>::new();
 
