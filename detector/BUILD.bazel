@@ -50,10 +50,10 @@ rust_library(
         "src/lib.rs",
         "src/rtmo.rs",
     ],
+    visibility = ["//visibility:public"],
     deps = [
-        ":rtmo_cpp",
         ":rtmo_bridge",
+        ":rtmo_cpp",
         "@cxx.rs//:cxx",
     ],
-    visibility = ["//visibility:public"],
 )

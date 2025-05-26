@@ -32,13 +32,31 @@ crate.spec(
     version = "0.24",
 )
 crate.spec(
+    features = ["ndarray"],
     package = "video-rs",
     version = "0.10.3",
-    features = ["ndarray"],
 )
 crate.spec(
     package = "minifb",
     version = "0.28.0",
 )
+crate.spec(
+    package = "thiserror",
+    version = "2.0.12",
+)
+crate.spec(
+    package = "nalgebra",
+    version = "0.33.2",
+)
+crate.spec(
+    package = "num",
+    version = "0.4.3",
+)
 crate.from_specs()
 use_repo(crate, "crates")
+
+bazel_dep(
+    name = "buildifier_prebuilt",
+    version = "8.0.3",
+    dev_dependency = True,
+)
