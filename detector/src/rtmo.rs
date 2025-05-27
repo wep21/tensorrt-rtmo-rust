@@ -1,12 +1,12 @@
 #[cxx::bridge(namespace = "rtmo")]
 pub mod ffi {
-    #[derive(Debug)]
+    #[derive(Debug, Clone)]
     struct Point {
         x: f32,
         y: f32,
     }
 
-    #[derive(Debug)]
+    #[derive(Debug, Clone)]
     struct Bbox {
         tl: Point,
         br: Point,
@@ -14,14 +14,14 @@ pub mod ffi {
         class_index: i32,
     }
 
-    #[derive(Debug)]
+    #[derive(Debug, Clone)]
     struct Keypoint {
         x: f32,
         y: f32,
         score: f32,
     }
 
-    #[derive(Debug)]
+    #[derive(Debug, Clone)]
     struct PoseResult {
         keypoints: Vec<Keypoint>,
         bbox: Bbox,

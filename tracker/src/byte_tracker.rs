@@ -1,7 +1,6 @@
 use crate::{
     error::ByteTrackError,
     lapjv::lapjv,
-    object::Object,
     rect::Rect,
     strack::{STrack, STrackState},
 };
@@ -10,16 +9,94 @@ use std::{collections::HashMap, vec};
  * ByteTracker
  * ---------------------------------------------------------------------------- */
 
+#[derive(Debug, Clone)]
+pub struct PoseResultWithTrackID {
+    pub pose: rtmo::rtmo::ffi::PoseResult,
+    pub track_id: Option<usize>,
+}
+
+impl PoseResultWithTrackID {
+    pub fn new(pose: rtmo::rtmo::ffi::PoseResult, track_id: Option<usize>) -> Self {
+        Self { pose, track_id }
+    }
+    pub fn get_rect(&self) -> Rect<f32> {
+        Rect::<f32>::new(
+            self.pose.bbox.tl.x,
+            self.pose.bbox.tl.y,
+            self.pose.bbox.br.x - self.pose.bbox.tl.x,
+            self.pose.bbox.br.y - self.pose.bbox.tl.y,
+        )
+    }
+    pub fn get_prob(&self) -> f32 {
+        self.pose.bbox.score as f32
+    }
+    pub fn get_pose(&self) -> Vec<rtmo::rtmo::ffi::Keypoint> {
+        self.pose.keypoints.clone()
+    }
+}
+
+impl From<STrack> for PoseResultWithTrackID {
+    fn from(strack: STrack) -> Self {
+        let rect = strack.get_rect();
+        let pose = strack.get_pose();
+        let score = strack.get_score();
+        let track_id = strack.get_track_id();
+        PoseResultWithTrackID {
+            pose: rtmo::rtmo::ffi::PoseResult {
+                keypoints: pose,
+                bbox: rtmo::rtmo::ffi::Bbox {
+                    tl: rtmo::rtmo::ffi::Point {
+                        x: rect.x(),
+                        y: rect.y(),
+                    },
+                    br: rtmo::rtmo::ffi::Point {
+                        x: rect.x() + rect.width(),
+                        y: rect.y() + rect.height(),
+                    },
+                    score: score,
+                    class_index: 0, // Assuming class_index is not used
+                },
+            },
+            track_id: Some(track_id),
+        }
+    }
+}
+
+impl From<&STrack> for PoseResultWithTrackID {
+    fn from(strack: &STrack) -> Self {
+        let rect = strack.get_rect();
+        let pose = strack.get_pose();
+        let score = strack.get_score();
+        let track_id = strack.get_track_id();
+        PoseResultWithTrackID {
+            pose: rtmo::rtmo::ffi::PoseResult {
+                keypoints: pose,
+                bbox: rtmo::rtmo::ffi::Bbox {
+                    tl: rtmo::rtmo::ffi::Point {
+                        x: rect.x(),
+                        y: rect.y(),
+                    },
+                    br: rtmo::rtmo::ffi::Point {
+                        x: rect.x() + rect.width(),
+                        y: rect.y() + rect.height(),
+                    },
+                    score: score,
+                    class_index: 0, // Assuming class_index is not used
+                },
+            },
+            track_id: Some(track_id),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct ByteTracker {
     track_thresh: f32,
     high_thresh: f32,
     match_thresh: f32,
     max_time_lost: usize,
-
     frame_id: usize,
     track_id_count: usize,
-
     tracked_stracks: Vec<STrack>,
     lost_stracks: Vec<STrack>,
     removed_stracks: Vec<STrack>,
@@ -38,17 +115,18 @@ impl ByteTracker {
             high_thresh,
             match_thresh,
             max_time_lost: (track_buffer as f32 * frame_rate as f32 / 30.0) as usize,
-
             frame_id: 0,
             track_id_count: 0,
-
             tracked_stracks: Vec::new(),
             lost_stracks: Vec::new(),
             removed_stracks: Vec::new(),
         }
     }
 
-    pub fn update(&mut self, objects: &Vec<Object>) -> Result<Vec<Object>, ByteTrackError> {
+    pub fn update(
+        &mut self,
+        poses: &Vec<PoseResultWithTrackID>,
+    ) -> Result<Vec<PoseResultWithTrackID>, ByteTrackError> {
         self.frame_id += 1;
 
         /* ------------------ Step 1: Get detections ------------------------- */
@@ -57,9 +135,9 @@ impl ByteTracker {
         let mut det_stracks = Vec::new();
         let mut det_low_stracks = Vec::new();
 
-        for obj in objects {
-            let strack = STrack::new(obj.get_rect(), obj.get_prob());
-            if obj.get_prob() >= self.track_thresh {
+        for pose in poses {
+            let strack = STrack::new(pose.get_rect(), pose.get_pose(), pose.get_prob());
+            if pose.get_prob() >= self.track_thresh {
                 det_stracks.push(strack);
             } else {
                 det_low_stracks.push(strack);

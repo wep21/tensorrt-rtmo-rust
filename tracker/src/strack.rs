@@ -2,11 +2,9 @@ use crate::{
     kalman_filter::{KalmanFilter, StateCov, StateMean},
     rect::Rect,
 };
+use rtmo::rtmo::ffi::Keypoint;
 use std::fmt::Debug;
 
-/* ----------------------------------------------------------------------------
- * STrack State enums
- * ---------------------------------------------------------------------------- */
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub(crate) enum STrackState {
     New,
@@ -14,10 +12,6 @@ pub(crate) enum STrackState {
     Lost,
     Removed,
 }
-
-/* ----------------------------------------------------------------------------
- * STrack struct
- * ---------------------------------------------------------------------------- */
 
 impl Debug for STrack {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -35,6 +29,7 @@ pub(crate) struct STrack {
     mean: StateMean,
     covariance: StateCov,
     rect: Rect<f32>,
+    pose: Vec<Keypoint>,
     state: STrackState,
     is_activated: bool,
     score: f32,
@@ -45,7 +40,7 @@ pub(crate) struct STrack {
 }
 
 impl STrack {
-    pub(crate) fn new(rect: Rect<f32>, score: f32) -> Self {
+    pub(crate) fn new(rect: Rect<f32>, pose: Vec<Keypoint>, score: f32) -> Self {
         let kalman_filter = KalmanFilter::new(1.0 / 20., 1.0 / 160.);
         let mean = StateMean::zeros();
         let covariance = StateCov::zeros();
@@ -54,6 +49,7 @@ impl STrack {
             mean,
             covariance,
             rect,
+            pose,
             state: STrackState::New,
             is_activated: false,
             score,
@@ -75,6 +71,7 @@ impl STrack {
             mean,
             covariance,
             rect: Rect::new(0.0, 0.0, 0.0, 0.0),
+            pose: Vec::new(),
             state: STrackState::New,
             is_activated: false,
             score: 0.0,
@@ -88,6 +85,11 @@ impl STrack {
     #[inline(always)]
     pub(crate) fn get_rect(&self) -> Rect<f32> {
         return self.rect.clone();
+    }
+
+    #[inline(always)]
+    pub(crate) fn get_pose(&self) -> Vec<Keypoint> {
+        return self.pose.clone();
     }
 
     #[inline(always)]
@@ -176,6 +178,7 @@ impl STrack {
         self.state = STrackState::Tracked;
         self.is_activated = true;
         self.score = new_track.get_score();
+        self.pose = new_track.get_pose();
         self.frame_id = frame_id;
         self.tracklet_len += 1;
     }

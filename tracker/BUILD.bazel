@@ -5,7 +5,9 @@ rust_library(
     srcs = glob([
         "src/*.rs",
     ]),
+    visibility = ["//visibility:public"],
     deps = [
+        "//detector:rtmo",
         "@crates//:nalgebra",
         "@crates//:num",
         "@crates//:thiserror",
@@ -19,6 +21,7 @@ rust_test(
         "src/*.rs",
     ]),
     deps = [
+        "//detector:rtmo",
         "@crates//:nalgebra",
         "@crates//:nearly_eq",
         "@crates//:num",

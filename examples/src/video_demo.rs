@@ -1,8 +1,11 @@
+use ab_glyph::FontArc;
 use cxx::let_cxx_string;
 use cxx::CxxVector;
 use image::{ImageBuffer, Rgb};
+use imageproc::drawing::draw_text_mut;
 use minifb::{Key, Window, WindowOptions};
 use rtmo::rtmo::ffi::{make_rtmo, PoseResult};
+use tracker::byte_tracker::{ByteTracker, PoseResultWithTrackID};
 use video_rs::decode::Decoder;
 use video_rs::location::Location;
 
@@ -23,6 +26,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         (height as u32).try_into().unwrap(),
     );
     let mut detector = binding.pin_mut();
+    let mut tracker = ByteTracker::new(12, 30, 0.5, 0.6, 0.8);
     let mut pose_results = CxxVector::<PoseResult>::new();
 
     // Create a window for displaying frames
@@ -32,6 +36,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         height as usize,
         WindowOptions::default(),
     )?;
+
+    let font_data: &[u8] = include_bytes!("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf");
+    let font = FontArc::try_from_slice(font_data).unwrap();
+    let scale = 36.0f32;
 
     for (_, frame) in decoder
         .decode_iter()
@@ -49,6 +57,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let inference_time = start_time.elapsed();
         println!("Inference status: {}", status);
         println!("Inference time: {:?}", inference_time);
+        let pose_results_with_track_id: Vec<PoseResultWithTrackID> = pose_results
+            .iter()
+            .map(|pose_result| PoseResultWithTrackID {
+                track_id: None,
+                pose: pose_result.clone(),
+            })
+            .collect();
+
+        let track_results = tracker
+            .update(&pose_results_with_track_id)
+            .unwrap_or_else(|e| {
+                eprintln!("Error updating tracker: {}", e);
+                vec![]
+            });
 
         // Draw inference results on the frame
         let mut annotated_image = ImageBuffer::from_fn(width as u32, height as u32, |x, y| {
@@ -56,13 +78,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             *pixel
         });
 
-        annotated_image = pose_results
+        annotated_image = track_results
             .iter()
-            .fold(annotated_image, |mut img, pose_result| {
-                let x_min = pose_result.bbox.tl.x as u32;
-                let y_min = pose_result.bbox.tl.y as u32;
-                let x_max = std::cmp::min(pose_result.bbox.br.x as u32, width - 1);
-                let y_max = std::cmp::min(pose_result.bbox.br.y as u32, height - 1);
+            .fold(annotated_image, |mut img, track_result| {
+                let x_min = track_result.pose.bbox.tl.x as u32;
+                let y_min = track_result.pose.bbox.tl.y as u32;
+                let x_max = std::cmp::min(track_result.pose.bbox.br.x as u32, width - 1);
+                let y_max = std::cmp::min(track_result.pose.bbox.br.y as u32, height - 1);
 
                 // Draw bounding box
                 for x in x_min..=x_max {
@@ -75,7 +97,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 }
 
                 // Draw keypoints
-                for keypoint in &pose_result.keypoints {
+                for keypoint in &track_result.pose.keypoints {
                     let x = keypoint.x as u32;
                     let y = keypoint.y as u32;
                     if x < width && y < height {
@@ -101,6 +123,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 }
                             }
                         }
+                    }
+
+                    // Draw track ID
+                    if let Some(track_id) = track_result.track_id {
+                        draw_text_mut(
+                            &mut img,
+                            Rgb([255, 255, 0]),
+                            x_min as i32,
+                            std::cmp::max(y_min as i32 - scale as i32, 0),
+                            scale,
+                            &font,
+                            &format!("{}", track_id),
+                        );
                     }
                 }
 
