@@ -57,6 +57,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let inference_time = start_time.elapsed();
         println!("Inference status: {}", status);
         println!("Inference time: {:?}", inference_time);
+        let track_start_time = std::time::Instant::now();
         let pose_results_with_track_id: Vec<PoseResultWithTrackID> = pose_results
             .iter()
             .map(|pose_result| PoseResultWithTrackID {
@@ -71,6 +72,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 eprintln!("Error updating tracker: {}", e);
                 vec![]
             });
+        let track_time = track_start_time.elapsed();
+        println!("Tracking time: {:?}", track_time);
 
         // Draw inference results on the frame
         let mut annotated_image = ImageBuffer::from_fn(width as u32, height as u32, |x, y| {

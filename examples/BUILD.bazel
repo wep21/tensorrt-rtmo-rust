@@ -19,11 +19,11 @@ rust_binary(
     ],
     deps = [
         "//detector:rtmo",
-        "//tracker:tracker",
+        "//tracker",
+        "@crates//:ab_glyph",
         "@crates//:image",
         "@crates//:imageproc",
         "@crates//:minifb",
-        "@crates//:ab_glyph",
         "@crates//:video-rs",
         "@cxx.rs//:cxx",
     ],
