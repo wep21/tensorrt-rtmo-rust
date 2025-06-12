@@ -1,6 +1,10 @@
 #include "rtmo.hpp"
 
+#if __has_include("rtmo/src/rtmo.rs.h")
+#include "rtmo/src/rtmo.rs.h"
+#else
 #include "rtmo.rs.h"
+#endif
 
 namespace rtmo {
 Rtmo::~Rtmo() {

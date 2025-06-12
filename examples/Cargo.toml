@@ -1,0 +1,24 @@
+[package]
+name = "examples"
+version = { workspace = true }
+edition = { workspace = true }
+authors = { workspace = true }
+
+[[bin]]
+name = "image_demo"
+path = "src/image_demo.rs"
+
+[[bin]]
+name = "video_demo"
+path = "src/video_demo.rs"
+
+[dependencies]
+rtmo = { path = "../detector" }
+tracker = { path = "../tracker" } # Needed by video_demo
+
+cxx = "1.0.149"
+image = "0.25.0"
+ab_glyph = "0.2.29"
+imageproc = "0.25.0"
+minifb = "0.28.0"
+video-rs = { version = "0.10.3", features = ["ndarray"] }

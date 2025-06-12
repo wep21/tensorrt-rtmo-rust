@@ -1,0 +1,20 @@
+[package]
+name = "tracker"
+version = { workspace = true }
+edition = { workspace = true }
+authors = { workspace = true }
+
+[lib]
+name = "tracker"
+path = "src/lib.rs"
+
+[dependencies]
+rtmo = { path = "../detector" }
+nalgebra = "0.33.2"
+num = "0.4.3"
+thiserror = "2.0.12"
+
+[dev-dependencies]
+nearly_eq = "0.2.4"
+quickcheck = "1.0.3"
+rand = "0.8.5"

@@ -1,0 +1,15 @@
+[package]
+name = "rtmo"
+version = { workspace = true }
+edition = { workspace = true }
+authors = { workspace = true }
+
+[lib]
+name = "rtmo"
+path = "src/lib.rs"
+
+[dependencies]
+cxx = "1.0.149"
+
+[build-dependencies]
+cxx-build = "1.0.149"
