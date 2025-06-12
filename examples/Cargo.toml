@@ -1,0 +1,30 @@
+[package]
+name = "examples"
+version = "0.1.0"
+edition = "2021" # From MODULE.bazel (rust.toolchain)
+authors = ["Your Name <you@example.com>"] # Placeholder
+publish = false # Examples are typically not published
+
+[[bin]]
+name = "image_demo"
+path = "src/image_demo.rs"
+
+[[bin]]
+name = "video_demo"
+path = "src/video_demo.rs"
+
+[dependencies]
+rtmo = { path = "../detector" }
+tracker = { path = "../tracker" } # Needed by video_demo
+
+cxx = "1.0.149"
+image = "0.25.0"
+ab_glyph = "0.2.29"
+imageproc = "0.25.0"
+minifb = "0.28.0"
+video-rs = { version = "0.10.3", features = ["ndarray"] }
+
+# Note: Since image_demo does not use tracker, ab_glyph, imageproc, minifb, video-rs,
+# these will still be compiled if you do `cargo build --bin image_demo` because
+# they are listed as common dependencies. For example crates, this is often acceptable.
+# If strict separation is needed, they would need to be separate Cargo packages.

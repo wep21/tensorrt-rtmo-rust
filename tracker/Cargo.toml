@@ -1,0 +1,31 @@
+[package]
+name = "tracker"
+version = "0.1.0"
+edition = "2021" # From MODULE.bazel (rust.toolchain)
+authors = ["Your Name <you@example.com>"] # Placeholder
+
+[lib]
+name = "tracker"
+path = "src/lib.rs"
+
+[dependencies]
+rtmo = { path = "../detector" }
+nalgebra = "0.33.2"
+num = "0.4.3"
+thiserror = "2.0.12"
+
+[dev-dependencies]
+# rtmo = { path = "../detector" } # Already in [dependencies]
+# nalgebra = "0.33.2" # Already in [dependencies]
+# num = "0.4.3" # Already in [dependencies]
+# thiserror = "2.0.12" # Already in [dependencies]
+nearly_eq = "0.2.4"
+quickcheck = "1.0.3"
+rand = "0.8.5"
+
+# The tracker_test in BUILD.bazel uses srcs = glob(["src/*.rs"]),
+# which suggests tests might be inline or in files picked up by Cargo's
+# default test discovery (e.g. src/tests/some_test.rs or tests/integration_test.rs).
+# If tests are embedded within lib.rs or other src/*.rs files (like src/test_byte_tracker.rs),
+# Cargo will pick them up automatically. No specific [[test]] section is needed
+# unless there's a non-standard test file name or location.
