@@ -1,0 +1,18 @@
+[workspace]
+members = [
+    "detector",
+    "tracker",
+    "examples",
+]
+resolver = "2"
+
+# Optional: Default members for `cargo build` and `cargo run` when in the root
+# default-members = ["examples"] # Or any specific crate you want to build/run by default
+
+# Optional: Common dependencies for the workspace can be defined here
+# [workspace.dependencies]
+# cxx = "1.0.149"
+# image = "0.25.0"
+# etc.
+# This allows member crates to inherit them using `dep_name.workspace = true`
+# For now, keeping it simple as per the plan.
