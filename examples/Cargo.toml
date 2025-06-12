@@ -1,9 +1,8 @@
 [package]
 name = "examples"
-version = "0.1.0"
-edition = "2021" # From MODULE.bazel (rust.toolchain)
-authors = ["Your Name <you@example.com>"] # Placeholder
-publish = false # Examples are typically not published
+version = { workspace = true }
+edition = { workspace = true }
+authors = { workspace = true }
 
 [[bin]]
 name = "image_demo"
@@ -23,8 +22,3 @@ ab_glyph = "0.2.29"
 imageproc = "0.25.0"
 minifb = "0.28.0"
 video-rs = { version = "0.10.3", features = ["ndarray"] }
-
-# Note: Since image_demo does not use tracker, ab_glyph, imageproc, minifb, video-rs,
-# these will still be compiled if you do `cargo build --bin image_demo` because
-# they are listed as common dependencies. For example crates, this is often acceptable.
-# If strict separation is needed, they would need to be separate Cargo packages.

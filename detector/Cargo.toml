@@ -1,8 +1,8 @@
 [package]
 name = "rtmo"
-version = "0.1.0" # Default version, can be adjusted
-edition = "2021"  # From MODULE.bazel (rust.toolchain)
-authors = ["Your Name <you@example.com>"] # Placeholder
+version = { workspace = true }
+edition = { workspace = true }
+authors = { workspace = true }
 
 [lib]
 name = "rtmo"
@@ -11,11 +11,5 @@ path = "src/lib.rs"
 [dependencies]
 cxx = "1.0.149"
 
-# For handling the C++ compilation and linking:
 [build-dependencies]
-cxx-build = "1.0.149" # Or a suitable build script helper if available via rules_rust
-
-# Potentially, if rtmo.rs is a separate module for the bridge
-# [[bin]]
-# name = "rtmo_bridge_bin" # Example if it were a binary
-# path = "src/rtmo.rs"
+cxx-build = "1.0.149"

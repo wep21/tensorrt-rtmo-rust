@@ -6,13 +6,15 @@ members = [
 ]
 resolver = "2"
 
-# Optional: Default members for `cargo build` and `cargo run` when in the root
-# default-members = ["examples"] # Or any specific crate you want to build/run by default
-
-# Optional: Common dependencies for the workspace can be defined here
-# [workspace.dependencies]
-# cxx = "1.0.149"
-# image = "0.25.0"
-# etc.
-# This allows member crates to inherit them using `dep_name.workspace = true`
-# For now, keeping it simple as per the plan.
+[workspace.package]
+edition = "2021"
+description = "Pose Track with RTMO and ByteTrack"
+homepage = "https://github.com/wep21/tensorrt-rtmo-rust"
+license = "MIT OR Apache-2.0"
+authors = [
+  "Daisuke Nishimatsu <daisuke.nishimatsu1021@gmail.com>",
+]
+readme = "README.md"
+repository = "https://github.com/wep21/tensorrt-rtmo-rus"
+rust-version = "1.81"
+version = "0.1.0"

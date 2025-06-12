@@ -19,7 +19,7 @@ fn main() {
 
     // --- TensorRT ---
     // Path relative to workspace root.
-    let tensorrt_base_path = workspace_root.join("repositories/tensorrt");
+    let tensorrt_base_path = workspace_root.join("/usr");
     let tensorrt_include_path = tensorrt_base_path.join("include/x86_64-linux-gnu");
     let tensorrt_lib_path = tensorrt_base_path.join("lib/x86_64-linux-gnu");
 
@@ -29,7 +29,7 @@ fn main() {
 
     // --- CVCUDA ---
     // Path relative to workspace root.
-    let cvcuda_base_path = workspace_root.join("repositories/cvcuda");
+    let cvcuda_base_path = workspace_root.join("/usr");
     let cvcuda_include_path = cvcuda_base_path.join("include");
     let cvcuda_lib_path = cvcuda_base_path.join("lib");
 
